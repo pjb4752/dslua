@@ -1,0 +1,42 @@
+local Array = require('dslua.array')
+
+describe('An Array', function()
+  local array = nil
+
+  before_each(function()
+    array = Array.new(10, 20, 30)
+  end)
+
+  describe('pushing an element', function()
+    it('adds the element onto the end of the array', function()
+      array:push(40)
+      assert.are.equals(4, #array)
+      assert.are.equals(40, array:last())
+    end)
+  end)
+
+  describe('popping an element', function()
+    it('removes and returns the last array element', function()
+      local value = array:pop()
+      assert.are.equals(2, #array)
+      assert.are.equals(30, value)
+    end)
+  end)
+
+  describe('pushing another array', function()
+    it('appends the new elements onto the original', function()
+      array:push_all(Array.new(40, 50))
+      assert.are.equals(5, #array)
+      assert.are.equals(40, array[4])
+      assert.are.equals(50, array[5])
+    end)
+  end)
+
+  describe('creating a clone', function()
+    it('copies the array', function()
+      local other = array:clone()
+      assert.are.same(array, other)
+      assert.are_not.equals(array, other)
+    end)
+  end)
+end)
