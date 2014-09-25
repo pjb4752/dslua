@@ -1,3 +1,4 @@
+local Array = require('dslua.array')
 local Map = require('dslua.map')
 
 describe('A Map', function()
@@ -59,6 +60,122 @@ describe('A Map', function()
       local values = map:values()
       table.sort(values)
       assert.are.same({ 10, 20, 30}, values)
+    end)
+  end)
+
+  describe('pouring elements into another collection', function()
+    it('copies the elements', function()
+      local other = map:enum():into(Map.new())
+      assert.are.same(map, other)
+    end)
+  end)
+
+  describe('testing if any element satisfies a predicate', function()
+    context('when an element satisfies the predicate', function()
+      it('returns true', function()
+        local pred = function(e) return e[2] > 10 end
+        local result = map:enum():p_any(pred)
+        assert.is_true(result)
+      end)
+    end)
+
+    context('when no element satisfies the predicate', function()
+      it('returns false', function()
+        local pred = function(e) return e[2] > 100 end
+        local result = map:enum():p_any(pred)
+        assert.is_false(result)
+      end)
+    end)
+  end)
+
+  describe('testing if all elements satisfy a predicate', function()
+    context('when all elements satisfy the predicate', function()
+      it('returns true', function()
+        local pred = function(e) return e[2] < 50 end
+        local result = map:enum():p_all(pred)
+        assert.is_true(result)
+      end)
+    end)
+
+    context('when on element fails to satisfy the predicate', function()
+      it('returns false', function()
+        local pred = function(e) return e[2] < 30 end
+        local result = map:enum():p_all(pred)
+        assert.is_false(result)
+      end)
+    end)
+  end)
+
+  describe('testing if an element is present', function()
+    context('when the element is present', function()
+      it('returns true', function()
+        local result = map:enum():p_cont({ 'foo', 10 })
+        assert.is_true(result)
+      end)
+    end)
+
+    context('when the element is not present', function()
+      it('returns false', function()
+        local result = map:enum():p_cont({ 'foo', 20 })
+        assert.is_false(result)
+      end)
+    end)
+  end)
+
+  describe('testing when no elements satisfy a predicate', function()
+    context('when no elements satisfy the predicate', function()
+      it('returns true', function()
+        local pred = function(e) return e[2] < 0 end
+        local result = map:enum():p_none(pred)
+        assert.is_true(result)
+      end)
+    end)
+
+    context('when an element satisfies the predicate', function()
+      it('returns false', function()
+        local pred = function(e) return e[2] < 15 end
+        local result = map:enum():p_none(pred)
+        assert.is_false(result)
+      end)
+    end)
+  end)
+
+  describe('reducing the elements', function()
+    it('returns the result of the reduction', function()
+      local reducer = function(acc, e) return acc + e[2] end
+      local result = map:enum():reduce(reducer, 0)
+      assert.are.equal(60, result)
+    end)
+  end)
+
+  describe('mapping the elements', function()
+    it('returns the mapped values', function()
+      local mapper = function(e) return { e[1], e[2] + 5 } end
+      local result = map:enum():map(mapper):all()
+      assert.are.same({ foo = 15, bar = 25, baz = 35 }, result)
+    end)
+  end)
+
+  describe('filtering the elements', function()
+    it('returns elements that pass the filter', function()
+      local filterer = function(e) return e[2] > 10 end
+      local result = map:enum():filter(filterer):all()
+      assert.are.same({ bar = 20, baz = 30 }, result)
+    end)
+  end)
+
+  describe('catting elements', function()
+    it('returns a flattened set of elements', function()
+      local result = Map.new('foo', 10):enum():cat():into(Array.new())
+      assert.are.same({ 'foo', 10 }, result)
+    end)
+  end)
+
+  describe('mapcatting elements', function()
+    it('returns a mapped set of elements, flattened', function()
+      local mapper = function(e) return { e[1], e[2] * 10, e[2] * 100 } end
+      local result = Map.new('foo', 10):enum():mapcat(mapper):into(Array.new())
+      assert.are.same({ 'foo', 100, 1000 }, result)
     end)
   end)
 end)

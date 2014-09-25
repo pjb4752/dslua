@@ -1,4 +1,5 @@
-local Array = require('lualibs.array')
+local Array = require('dslua.array')
+local Enum = require('dslua.enum')
 
 local getmeta, setmeta = getmetatable, setmetatable
 local typeof, rset, err = type, rawset, error
@@ -40,6 +41,10 @@ end
 
 function M.p_map(obj)
   return typeof(obj) == 'table' and obj.__type == M.__type
+end
+
+function M.enum(map)
+  return Enum.new(map)
 end
 
 function M.get(map, key, default)

@@ -13,6 +13,29 @@ local function compose(fns)
   end
 end
 
+local function compare(v1, v2)
+  if typeof(v1) ~= typeof(v2) then
+    return false
+  end
+  if typeof(v1) ~= 'table' then
+    return v1 == v2
+  end
+  if v1.__type ~= v2.__type then
+    return false
+  end
+  for x1, x2 in pairs(v1) do
+    if not compare(x2, v2[x1]) then
+      return false
+    end
+  end
+  for x1, x2 in pairs(v2) do
+    if not compare(x2, v1[x1]) then
+      return false
+    end
+  end
+  return true
+end
+
 function M.new(source)
   return setmeta({ source = source, links = {} }, { __index = M })
 end
@@ -43,7 +66,7 @@ function M.p_all(enum, predicate)
 end
 
 function M.p_cont(enum, value)
-  return enum:p_any(function(e) return e == value end)
+  return enum:p_any(function(e) return compare(e, value) end)
 end
 
 function M.p_none(enum, predicate)
