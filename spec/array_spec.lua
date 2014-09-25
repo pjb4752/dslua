@@ -39,4 +39,121 @@ describe('An Array', function()
       assert.are_not.equals(array, other)
     end)
   end)
+
+  describe('pouring elements into another collection', function()
+    it('copies the elements', function()
+      local other = array:enum():into(Array.new())
+      assert.are.same(array, other)
+    end)
+  end)
+
+  describe('testing if any element satisfies a predicate', function()
+    context('when an element satisfies the predicate', function()
+      it('returns true', function()
+        local pred = function(e) return e > 10 end
+        local result = array:enum():p_any(pred)
+        assert.are.truthy(result)
+      end)
+    end)
+
+    context('when no element satifies the predicate', function()
+      it('returns false', function()
+        local pred = function(e) return e > 100 end
+        local result = array:enum():p_any(pred)
+        assert.are.falsy(result)
+      end)
+    end)
+  end)
+
+  describe('testing if all elements satisfy a prediate', function()
+    context('when all elements satisfy the predicate', function()
+      it('returns true', function()
+        local pred = function(e) return e < 50 end
+        local result = array:enum():p_all(pred)
+        assert.are.truthy(result)
+      end)
+    end)
+
+    context('when one element fails to satisfy the predicate', function()
+      it('returns false', function()
+        local pred = function(e) return e < 30 end
+        assert.are.falsy(result)
+      end)
+    end)
+  end)
+
+  describe('testing if an element is present', function()
+    context('when the element is present', function()
+      it('returns true', function()
+        local result = array:enum():p_cont(10)
+        assert.are.truthy(result)
+      end)
+    end)
+
+    context('when the element is not present', function()
+      it('returns false', function()
+        local result = array:enum():p_cont(40)
+        assert.are.falsy(result)
+      end)
+    end)
+  end)
+
+  describe('testing when no elements satisfy a predicate', function()
+    context('when no elements satisfy the predicate', function()
+      it('returns true', function()
+        local pred = function(e) return e < 0 end
+        local result = array:enum():p_none(pred)
+        assert.are.truthy(result)
+      end)
+    end)
+
+    context('when an element satisfies the predicate', function()
+      it('returns false', function()
+        local pred = function(e) return e < 15 end
+        local result = array:enum():p_none(pred)
+        assert.are.falsy(result)
+      end)
+    end)
+  end)
+
+  describe('reducing the elements', function()
+    it('returns the result of the reduction', function()
+      local reducer = function(acc, e) return acc + e end
+      local result = array:enum():reduce(reducer, 0)
+      assert.are.equal(60, result)
+    end)
+  end)
+
+  describe('mapping the elements', function()
+    it('returns the mapped values', function()
+      local mapper = function(e) return e + 5 end
+      local result = array:enum():map(mapper):all()
+      assert.are.same({ 15, 25, 35 }, result)
+    end)
+  end)
+
+  describe('filtering the elements', function()
+    it('returns elements that pass the filter', function()
+      local filterer = function(e) return e > 10 end
+      local result = array:enum():filter(filterer):all()
+      assert.are.same({ 20, 30 }, result)
+    end)
+  end)
+
+  describe('catting elements', function()
+    it('returns a flattened set of elements', function()
+      local nested1 = Array.new(4, 5, 6)
+      local nested2 = Array.new(7, 8, 9)
+      local result = Array.new(nested1, nested2):enum():cat():all()
+      assert.are.same({ 4, 5, 6, 7, 8, 9 }, result)
+    end)
+  end)
+
+  describe('mapcatting elements', function()
+    it('returns a mapped set of elements, flattened', function()
+      local mapper = function(e) return { e * 10, e * 100 } end
+      local result = array:enum():mapcat(mapper):all()
+      assert.are.same({ 100, 1000, 200, 2000, 300, 3000 }, result)
+    end)
+  end)
 end)

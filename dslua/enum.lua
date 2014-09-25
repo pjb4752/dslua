@@ -39,7 +39,7 @@ function M.p_all(enum, predicate)
   local reducer = compose(enum.links)
   local adjoiner = function(acc, e) return acc and predicate(e) end
 
-  return enum:reduce(reducer(adjoiner), false)
+  return enum:reduce(reducer(adjoiner), true)
 end
 
 function M.p_cont(enum, value)
@@ -79,7 +79,8 @@ function M.reduce(enum, reducer, init)
   elseif source.__type == 'map' then
     return reduce_map(source, reducer, init)
   elseif typeof(source) == 'table' then
-    if t[1] then
+    -- guessing at array-style table
+    if source[1] then
       return reduce_array(source, reducer, init)
     else
       return reduce_map(source, reducer, init)
