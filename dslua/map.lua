@@ -38,7 +38,7 @@ function M.from_table(source)
   return setmeta(source, { __index = M, __newindex = M.check_keys })
 end
 
-function M.is_map(obj)
+function M.p_map(obj)
   return typeof(obj) == 'table' and obj.__type == M.__type
 end
 
