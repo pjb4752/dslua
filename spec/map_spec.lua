@@ -43,7 +43,7 @@ describe('A Map', function()
     it('copies the map', function()
       local other = map:clone()
       assert.are.same(map, other)
-      assert.are_not.equals(other, map)
+      assert.are_not.equals(map, other)
     end)
   end)
 
