@@ -116,6 +116,23 @@ describe('An Array', function()
     end)
   end)
 
+  describe('finding the index of an element', function()
+    context('when the element exists', function()
+      it('returns the first matching index', function()
+        array:push(20)
+        local result = array:enum():index_of(20)
+        assert.are.equal(2, result)
+      end)
+    end)
+
+    context('when the element does not exist', function()
+      it('returns nil', function()
+        local result = array:enum():index_of(4000)
+        assert.are.equal(result, nil)
+      end)
+    end)
+  end)
+
   describe('reducing the elements', function()
     it('returns the result of the reduction', function()
       local reducer = function(acc, e) return acc + e end

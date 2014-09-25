@@ -50,6 +50,22 @@ function M.p_none(enum, predicate)
   return not enum:p_any(predicate)
 end
 
+function M.index_of(enum, value)
+  local reducer = compose(enum.links)
+  local index = 1
+
+  local adjoiner = function(acc, e)
+    if acc then return acc end
+    if e == value then
+      return index
+    else
+      index = index + 1
+    end
+  end
+
+  return enum:reduce(reducer(adjoiner), nil)
+end
+
 local function reduce_array(source, reducer, init)
   local result = init
 
