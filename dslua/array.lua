@@ -72,4 +72,18 @@ function M.clone(array)
   return M(unpack(array))
 end
 
+function M.index_of(array, value)
+  local index = 1
+  local reducer = function(acc, e)
+    if acc then return acc end
+    if e == value then
+      return index
+    else
+      index = index + 1
+    end
+  end
+
+  return Enum.new(array):reduce(reducer, nil)
+end
+
 return M
