@@ -1,3 +1,5 @@
+local Enum = require('dslua.enum')
+
 local getmeta, setmeta = getmetatable, setmetatable
 local typeof, rset, err = type, rawset, error
 local apairs = ipairs
@@ -14,43 +16,49 @@ if _G['DSLUA_CHECK_ARRAY_INDICES'] then
   end
 end
 
-M.new = function(...)
+function M.new(...)
   return M.from_table({ ... })
 end
 getmeta(M).__call = function(t, ...) return M.new(...) end
+M.builder = M.new
 
-M.from_table = function(source)
+function M.from_table(source)
   return setmeta(source, { __index = M, __newindex = M.check_indices })
 end
 
-M.is_array = function(obj)
+function M.p_array(obj)
   return typeof(obj) == 'table' and obj.__type == M.__type
 end
 
-M.first = function(array)
+function M.enum(array)
+  return Enum.new(array)
+end
+
+function M.first(array)
   return array[1]
 end
 
-M.last = function(array)
+function M.last(array)
   return array[table.getn(array)]
 end
 M.peek = M.last
 
-M.push = function(array, element)
+function M.push(array, element)
   local index = table.getn(array) + 1
   array[index] = element
   return array
 end
 M.append = M.push
+M.adjoiner = M.push
 
-M.pop = function(array)
+function M.pop(array)
   local last_index = table.getn(array)
   local last = array[last_index]
   array[last_index] = nil
   return last
 end
 
-M.push_all = function(array, other)
+function M.push_all(array, other)
   local index = table.getn(array)
   for i, v in apairs(other) do
     array[index + i] = v
@@ -59,7 +67,7 @@ M.push_all = function(array, other)
 end
 M.append_all = M.push_all
 
-M.clone = function(array)
+function M.clone(array)
   -- FIXME unpacking large tables (>8000 elements)
   return M(unpack(array))
 end

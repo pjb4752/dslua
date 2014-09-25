@@ -6,7 +6,7 @@ local apairs, mpairs = ipairs, pairs
 
 local M = setmeta({ __type = 'map' }, {})
 
--- probably not that useful, but numeric keys are uncommon...
+-- probably not that useful
 if _G['DSLUA_CHECK_MAP_KEYS'] then
   M.check_keys = function(target, index, value)
     if typeof(index) ~= 'number' then
@@ -17,12 +17,13 @@ if _G['DSLUA_CHECK_MAP_KEYS'] then
   end
 end
 
-M.new = function(...)
+function M.new(...)
   return M.from_array({ ... })
 end
 getmeta(M).__call = function(_, ...) return M.new(...) end
+M.builder = M.new
 
-M.from_array = function(source)
+function M.from_array(source)
   local obj = {}
   local key = nil
   for i, e in apairs(source) do
@@ -33,37 +34,39 @@ M.from_array = function(source)
   return M.from_table(obj)
 end
 
-M.from_table = function(source)
+function M.from_table(source)
   return setmeta(source, { __index = M, __newindex = M.check_keys })
 end
 
-M.is_map = function(obj)
+function M.is_map(obj)
   return typeof(obj) == 'table' and obj.__type == M.__type
 end
 
-M.get = function(map, key, default)
+function M.get(map, key, default)
   return map[key] or default
 end
 
-M.insert = function(map, tuple)
+function M.insert(map, tuple)
   local key, value = unpack(tuple)
   map[key] = value
   return map
 end
+M.assoc = M.insert
+M.adjoiner = M.insert
 
-M.merge = function(map, other)
+function M.merge(map, other)
   for key, value in mpairs(other) do
     map[key] = value
   end
   return map
 end
 
-M.clone = function(map)
+function M.clone(map)
   local dup = M.new()
   return M.merge(dup, map)
 end
 
-M.keys = function(map)
+function M.keys(map)
   local keys = {}
   local index = 1
   for k, _ in mpairs(map) do
@@ -73,7 +76,7 @@ M.keys = function(map)
   return Array.from_table(keys)
 end
 
-M.values = function(map)
+function M.values(map)
   local values = {}
   local index = 1
   for _, v in mpairs(map) do
