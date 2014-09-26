@@ -13,7 +13,7 @@ local function compose(fns)
   end
 end
 
-local function compare(v1, v2)
+local function p_equals(v1, v2)
   if typeof(v1) ~= typeof(v2) then
     return false
   end
@@ -24,12 +24,12 @@ local function compare(v1, v2)
     return false
   end
   for x1, x2 in mpairs(v1) do
-    if not compare(x2, v2[x1]) then
+    if not p_equals(x2, v2[x1]) then
       return false
     end
   end
   for x1, x2 in mpairs(v2) do
-    if not compare(x2, v1[x1]) then
+    if not p_equals(x2, v1[x1]) then
       return false
     end
   end
@@ -52,14 +52,14 @@ function M.into(enum, target)
 end
 
 function M.p_cont(enum, value)
-  return enum:p_any(function(e) return compare(e, value) end)
+  return enum:p_any(function(e) return p_equals(e, value) end)
 end
 
 function M.find(enum, value)
   local reducer = compose(enum.links)
   local adjoiner = function(acc, e)
     if acc then return acc end
-    if compare(e, value) then return e end
+    if p_equals(e, value) then return e end
   end
 
   return enum:reduce(reducer(adjoiner), nil)
