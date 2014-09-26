@@ -1,8 +1,8 @@
 package = "dslua"
-version = "0.1.0-1"
+version = "0.1.1-1"
 source = {
-  url = "https://github.com/pjb4752/dslua/archive/v0.1.0.tar.gz",
-  dir = "dslua-0.1.0"
+  url = "https://github.com/pjb4752/dslua/archive/v0.1.1.tar.gz",
+  dir = "dslua-0.1.1"
 }
 description = {
   summary = "lua collections",
