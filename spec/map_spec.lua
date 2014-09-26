@@ -63,6 +63,19 @@ describe('A Map', function()
     end)
   end)
 
+  describe('iterating over elements', function()
+    it('calls the side effect for each element', function()
+      local sum = 0
+      map:enum():each(function(e) sum = sum + e[2] end)
+      assert.are.equal(60, sum)
+    end)
+
+    it('returns nil', function()
+      local result = map:enum():each(function(e) return e end)
+      assert.are.equal(nil, result)
+    end)
+  end)
+
   describe('pouring elements into another collection', function()
     it('copies the elements', function()
       local other = map:enum():into(Map.new())

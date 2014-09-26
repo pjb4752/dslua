@@ -10,18 +10,14 @@ local filterer = function(e) return e > 5 end
 local result1 = numbers:enum():map(mapper):filter(filterer):into(Array.new())
 
 -- 6, 8, 10
-for i, e in ipairs(result1) do
-  print(e)
-end
+result1:enum():each(function(e) print(e) end)
 
 local mapcatter = function(e) return Array.from_table({ e, e * 2, e * 3 }) end
 
 local result2 = numbers:enum():mapcat(mapcatter):all()
 
 -- 1, 2, 3, 2, 4, 6, 3, 6, 9, 4, 8, 12, 5, 10, 15
-for i, e in ipairs(result2) do
-  print(e)
-end
+result2:enum():each(function(e) print(e) end)
 
 local result3 = numbers:enum():p_none(function(e) return e == 7 end)
 
@@ -30,6 +26,11 @@ print(result3)
 
 -- Maps --
 local ages = Map.new('Mary', 20, 'Bob', 24, 'Mike', 18, 'Jane', 22)
+
+local fmt = '%s is %d years old'
+local printer = function(e) print(string.format(fmt, e[1], e[2])) end
+-- prints name and age
+ages:enum():each(printer)
 
 local maxage = function(acc, e) return e[2] > acc[2] and e or acc end
 

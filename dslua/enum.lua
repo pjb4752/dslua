@@ -40,6 +40,13 @@ function M.new(source)
   return setmeta({ source = source, links = {} }, { __index = M })
 end
 
+function M.each(enum, action)
+  local reducer = compose(enum.links)
+  local adjoiner = function(acc, e) action(e) end
+
+  enum:reduce(reducer(adjoiner))
+end
+
 function M.all(enum)
   return M.into(enum, enum.source)
 end

@@ -40,6 +40,19 @@ describe('An Array', function()
     end)
   end)
 
+  describe('iterating over elements', function()
+    it('calls the side effect for each element', function()
+      local sum = 0
+      array:enum():each(function(e) sum = sum + e end)
+      assert.are.equal(60, sum)
+    end)
+
+    it('returns nil', function()
+      local result = array:enum():each(function(e) return e end)
+      assert.are.equal(nil, result)
+    end)
+  end)
+
   describe('pouring elements into another collection', function()
     it('copies the elements', function()
       local other = array:enum():into(Array.new())
