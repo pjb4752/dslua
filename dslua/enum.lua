@@ -62,11 +62,11 @@ function M.p_cont(enum, value)
   return enum:p_any(function(e) return p_equals(e, value) end)
 end
 
-function M.find(enum, value)
+function M.find(enum, selector)
   local reducer = compose(enum.links)
   local adjoiner = function(acc, e)
     if acc then return acc end
-    if p_equals(e, value) then return e end
+    if selector(e) then return e end
   end
 
   return enum:reduce(reducer(adjoiner), nil)
