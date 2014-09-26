@@ -23,12 +23,12 @@ local function compare(v1, v2)
   if v1.__type ~= v2.__type then
     return false
   end
-  for x1, x2 in pairs(v1) do
+  for x1, x2 in mpairs(v1) do
     if not compare(x2, v2[x1]) then
       return false
     end
   end
-  for x1, x2 in pairs(v2) do
+  for x1, x2 in mpairs(v2) do
     if not compare(x2, v1[x1]) then
       return false
     end
