@@ -51,6 +51,20 @@ function M.into(enum, target)
   return enum:reduce(reducer(target.adjoiner), init)
 end
 
+function M.p_cont(enum, value)
+  return enum:p_any(function(e) return compare(e, value) end)
+end
+
+function M.find(enum, value)
+  local reducer = compose(enum.links)
+  local adjoiner = function(acc, e)
+    if acc then return acc end
+    if compare(e, value) then return e end
+  end
+
+  return enum:reduce(reducer(adjoiner), nil)
+end
+
 function M.p_any(enum, predicate)
   local reducer = compose(enum.links)
   local adjoiner = function(acc, e) return acc or predicate(e) end
@@ -63,10 +77,6 @@ function M.p_all(enum, predicate)
   local adjoiner = function(acc, e) return acc and predicate(e) end
 
   return enum:reduce(reducer(adjoiner), true)
-end
-
-function M.p_cont(enum, value)
-  return enum:p_any(function(e) return compare(e, value) end)
 end
 
 function M.p_none(enum, predicate)
